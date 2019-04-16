@@ -1,6 +1,7 @@
 workspace(name = "com_github_bazelbuild_buildtools")
 
 load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:git.bzl", "git_repository")
 
 http_archive(
     name = "io_bazel_rules_go",
@@ -15,6 +16,12 @@ http_archive(
     sha256 = "f490124dd4b97c136cb8565f3aeefc2f2c1736afda7728b9b227b2b8aeadc88c",
     strip_prefix = "bazel-gazelle-44ce230b3399a5d4472198740358fcd825b0c3c9",
     url = "https://github.com/bazelbuild/bazel-gazelle/archive/44ce230b3399a5d4472198740358fcd825b0c3c9.tar.gz",  # 2018-12-10
+)
+
+git_repository(
+    name = "bazel_skylib",
+    remote = "https://github.com/bazelbuild/bazel-skylib",
+    commit = "be3b1fc838386bdbea39d9750ea4411294870575",  # release 0.8.0 + diff_test() rule
 )
 
 load("@io_bazel_rules_go//go:def.bzl", "go_register_toolchains", "go_rules_dependencies")

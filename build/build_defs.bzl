@@ -15,6 +15,8 @@ distributed under the License is distributed on an "AS IS" BASIS,
  limitations under the License.
 """
 
+load("@bazel_skylib//rules:copy_file.bzl", "copy_file")
+load("@bazel_skylib//rules:diff_test.bzl", "diff_test")
 load(
     "@io_bazel_rules_go//go/private:providers.bzl",
     "GoSource",
@@ -55,17 +57,10 @@ def genfile_check_test(src, gen):
         fail("src is required", "src")
     if not gen:
         fail("gen is required", "gen")
-    native.genrule(
-        name = src + "_checksh",
-        outs = [src + "_check.sh"],
-        cmd = "echo 'diff $$@' > $@",
-    )
-    native.sh_test(
+    diff_test(
         name = src + "_checkshtest",
-        size = "small",
-        srcs = [src + "_check.sh"],
-        data = [src, gen],
-        args = ["$(location " + src + ")", "$(location " + gen + ")"],
+        file1 = src,
+        file2 = gen,
     )
 
     # magic copy rule used to update the checked-in version
@@ -91,10 +86,9 @@ def go_proto_checkedin_test(src, proto = "go_default_library"):
     )
 
     # TODO(pmbethe09): why is the extra copy needed?
-    native.genrule(
+    copy_file(
         name = genfile,
-        srcs = [genfile + "go"],
-        outs = [genfile + ".go"],
-        cmd = "cp $< $@",
+        src = genfile + "go",
+        out = genfile + ".go",
     )
     genfile_check_test(src, genfile)
